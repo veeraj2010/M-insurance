@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Insurance Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Motor Insurance Manager</h1>
+        <form id="insuranceForm">
+            <input type="text" id="customerName" placeholder="Customer Name" required>
+            <input type="text" id="vehicleNumber" placeholder="Vehicle Number" required>
+            <input type="text" id="policyCompany" placeholder="Policy Company" required>
+            <input type="number" id="premium" placeholder="Premium Amount" required>
+            <input type="number" id="commission" placeholder="Commission Amount" required>
+            <input type="date" id="expiryDate" placeholder="Expiry Date" required>
+            <label>Attach PDF/Photo:
+                <input type="file" id="attachments" multiple accept=".pdf,image/*">
+            </label>
+            <button type="submit">Add Record</button>
+        </form>
+
+        <h2>Customer Records</h2>
+        <table id="recordsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Vehicle No.</th>
+                    <th>Company</th>
+                    <th>Premium</th>
+                    <th>Commission</th>
+                    <th>Expiry</th>
+                    <th>Attachments</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
