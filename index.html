@@ -1,5 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  // 📤 Save a policy
+  async function savePolicy() {
+    const customer = document.getElementById('customer').value;
+    const premium = document.getElementById('premium').value;
+    const commission = document.getElementById('commission').value;
+    const vehicle = document.getElementById('vehicle').value;
+    const expiry = document.getElementById('expiry').value;
+    const file = document.getElementById('file').files[0];
+
+    let fileUrl = "";
+    if (file) {
+      const storageRef = ref(storage, 'docs/' + file.name);
+      await uploadBytes(storageRef, file);
+      fileUrl = await getDownloadURL(storageRef);
+    }
+
+    await addDoc(collection(db, "policies"), {
+      customer,
+      premium,
+      commission,
+      vehicle,
+      expiry,
+      fileUrl
+    });
+
+    alert("Policy saved successfully!");
+  }
+
+  // 📥 Load all policies
+  async function loadPolicies() {
+    const querySnapshot = await getDocs(collection(db, "policies"));
+    const list = document.getElementById('data-list');
+    list.innerHTML = "";
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      list.innerHTML += `
+        <tr>
+          <td>${data.customer}</td>
+          <td>${data.premium}</td>
+          <td>${data.commission}</td>
+          <td>${data.vehicle}</td>
+          <td>${data.expiry}</td>
+          <td><a href="${data.fileUrl}" target="_blank">View File</a></td>
+        </tr>`;
+    });
+  }
+
+  window.savePolicy = savePolicy;
+  window.loadPolicies = loadPolicies;
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +77,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <h2>Motor Insurance Manager</h2>
+
+<form onsubmit="event.preventDefault(); savePolicy();">
+  <input id="customer" placeholder="Customer Name" required><br>
+  <input id="premium" type="number" placeholder="Premium" required><br>
+  <input id="commission" type="number" placeholder="Commission"><br>
+  <input id="vehicle" placeholder="Vehicle Number" required><br>
+  <input id="expiry" type="date" required><br>
+  <input id="file" type="file" accept="application/pdf,image/*"><br>
+  <button type="submit">Save Policy</button>
+</form>
+
+<h3>All Policies</h3>
+<table border="1">
+  <thead>
+    <tr>
+      <th>Customer</th>
+      <th>Premium</th>
+      <th>Commission</th>
+      <th>Vehicle</th>
+      <th>Expiry</th>
+      <th>File</th>
+    </tr>
+  </thead>
+  <tbody id="data-list"></tbody>
+</table>
+
+<script>
+  window.onload = loadPolicies;
+</script>
+
     <div class="container">
         <h1>Motor Insurance Manager</h1>
         <form id="insuranceForm">
